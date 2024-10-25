@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="path" page="" />
+    <title>PARCIAL DES APPS WEB</title>
+    <link href="./css/vendor/bootstrap.min.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-dark bg-opacity-50 text-bg-warning">
+    <div class="container-fluid">
+      <h4 class="text-center bg-warning p-4 rounded">ECO-STORE: Productos</h4>
+    </div>
+    <div class="container-fluid">
+      <div class="login-container">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="exampleFormControlInput1"
+            placeholder="Ingresa tu email"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="modal"
+      tabindex="-1"
+      aria-labelledby="modalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Error</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>No hay más registros</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/index.js" type="module"></script>
+
+    <script type="module" src="./js/vendor/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
