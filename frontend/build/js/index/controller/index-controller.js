@@ -1,12 +1,15 @@
 import Product from '../../product/product.js';
+import Login from '../../login/login.js';
 export default class IndexController {
     indexModel;
     indexView;
     product;
+    login;
     constructor(indexModel, indexView) {
         this.indexModel = indexModel;
         this.indexView = indexView;
         this.product = Product.create();
+        this.login = Login.create();
     }
     init = async () => {
         this.indexModel.init();
@@ -19,14 +22,21 @@ export default class IndexController {
             case 'products':
                 this.loadProducts();
                 break;
-            case 'update-appointment':
+            case 'login':
+                this.loadLogin();
                 break;
+            // case 'update-appointment':
+            //   break;
             default:
+                // this.loadLogin();
                 console.log('Error');
             //this.loadError();
         }
     };
     loadProducts = async () => {
         this.product.init();
+    };
+    loadLogin = async () => {
+        this.login.init();
     };
 }

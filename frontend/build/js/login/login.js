@@ -1,7 +1,7 @@
-import LoginController from './controller/login-controller';
-import LoginModel from './model/login-model';
-import LoginView from './view/login-view';
-export default class Product {
+import LoginController from './controller/login-controller.js';
+import LoginModel from './model/login-model.js';
+import LoginView from './view/login-view.js';
+export default class Login {
     static create() {
         const model = new LoginModel();
         const view = new LoginView(model);

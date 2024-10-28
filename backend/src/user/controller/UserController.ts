@@ -13,10 +13,10 @@ export default class UserController {
     res.status(200).json(products);
   };
 
-  public getUserById = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    if (id) {
-      const product = await this.userModel.getUserById(id);
+  public getUserByEmail = async (req: Request, res: Response) => {
+    const { email } = req.params;
+    if (email) {
+      const product = await this.userModel.getUserByEmail(email);
       if (product) {
         res.status(200).json(product);
       } else {

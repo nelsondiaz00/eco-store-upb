@@ -10,9 +10,9 @@ export default class UserModel {
     return JSON.parse(data) as User[];
   }
 
-  public async getUserById(id: string): Promise<User> {
+  public async getUserByEmail(email: string): Promise<User> {
     const users = await this.getUsers();
-    return users.find((user) => user.id === id) as User;
+    return users.find((user) => user.email === email) as User;
   }
 
   public async createUser(user: User): Promise<void> {

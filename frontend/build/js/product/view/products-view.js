@@ -1,16 +1,21 @@
 import Observer from '../types/observer.js';
+import ProductsTemplate from '../template/ProductTemplate.js';
 export default class ProductsView extends Observer {
     // private selector: HTMLDivElement;
     constructor(subject) {
         super(subject);
     }
-    init() {
+    async init() {
+        const main_container = document.querySelector('#container-fluid');
+        if (main_container) {
+            main_container.innerHTML = await ProductsTemplate.render();
+        }
         this.addListeners();
     }
     update() {
         this.render();
     }
-    render() {
+    async render() {
         this.fillProducts();
     }
     fillProducts() {
@@ -67,6 +72,15 @@ export default class ProductsView extends Observer {
         };
     }
     addListeners() {
+        window.addEventListener('DOMContentLoaded', () => {
+            this.addSubmitListeners();
+            // const submitIdentification = document.querySelector(
+            //   '#submit-identification-user'
+            // ) as HTMLButtonElement;
+            // console.log(submitIdentification);
+        });
+    }
+    addSubmitListeners() {
         const buttonPrev = document.getElementById('prev');
         buttonPrev.addEventListener('click', () => {
             this.subject.previousPage();

@@ -1,6 +1,7 @@
 import Observer from '../types/observer.js';
 import ProductsModel from '../model/products-model.js';
 import Product from '../types/product.js';
+import ProductsTemplate from '../template/ProductTemplate.js';
 export default class ProductsView extends Observer<ProductsModel> {
   // private selector: HTMLDivElement;
 
@@ -8,7 +9,13 @@ export default class ProductsView extends Observer<ProductsModel> {
     super(subject);
   }
 
-  public init() {
+  public async init() {
+    const main_container = document.querySelector(
+      '#container-fluid'
+    ) as HTMLFormElement;
+    if (main_container) {
+      main_container.innerHTML = await ProductsTemplate.render();
+    }
     this.addListeners();
   }
 
@@ -16,7 +23,7 @@ export default class ProductsView extends Observer<ProductsModel> {
     this.render();
   }
 
-  public render(): void {
+  public async render(): Promise<void> {
     this.fillProducts();
   }
 
@@ -90,6 +97,17 @@ export default class ProductsView extends Observer<ProductsModel> {
   }
 
   public addListeners(): void {
+    window.addEventListener('DOMContentLoaded', () => {
+      this.addSubmitListeners();
+      // const submitIdentification = document.querySelector(
+      //   '#submit-identification-user'
+      // ) as HTMLButtonElement;
+
+      // console.log(submitIdentification);
+    });
+  }
+
+  public addSubmitListeners(): void {
     const buttonPrev = document.getElementById('prev') as HTMLButtonElement;
 
     buttonPrev.addEventListener('click', () => {

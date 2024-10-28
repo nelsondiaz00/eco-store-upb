@@ -16,8 +16,8 @@ export default class UserView {
     );
 
     this.router.get(
-      '/users/:id',
-      this.userController.getUserById.bind(this.userController)
+      '/users/:email',
+      this.userController.getUserByEmail.bind(this.userController)
     );
     this.router.post(
       '/users/create',

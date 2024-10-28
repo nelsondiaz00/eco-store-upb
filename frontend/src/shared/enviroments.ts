@@ -39,4 +39,11 @@ export default class Environment {
       const endpoint = json['updateProduct'] as EndPoint;
       return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
     };
+
+  public static readonly getUserById = async (id: string): Promise<string> => {
+    const env = await fetch('./js/env/env.json');
+    const json = await env.json();
+    const endpoint = json['getUserById'] as EndPoint;
+    return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}/${id}`;
+  };
 }

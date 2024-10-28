@@ -2,13 +2,17 @@ import IndexModel from '../model/index-model.js';
 import IndexView from '../view/index-view.js';
 import ProductController from '../../product/controller/products-controller.js';
 import Product from '../../product/product.js';
+import LoginController from '../../login/controller/login-controller.js';
+import Login from '../../login/login.js';
 export default class IndexController {
   private readonly product: ProductController;
+  private readonly login: LoginController;
   constructor(
     private readonly indexModel: IndexModel,
     private readonly indexView: IndexView
   ) {
     this.product = Product.create();
+    this.login = Login.create();
   }
 
   public init = async (): Promise<void> => {
@@ -23,10 +27,14 @@ export default class IndexController {
       case 'products':
         this.loadProducts();
         break;
-
-      case 'update-appointment':
+      case 'login':
+        this.loadLogin();
         break;
+
+      // case 'update-appointment':
+      //   break;
       default:
+        // this.loadLogin();
         console.log('Error');
       //this.loadError();
     }
@@ -34,5 +42,9 @@ export default class IndexController {
 
   public loadProducts = async (): Promise<void> => {
     this.product.init();
+  };
+
+  public loadLogin = async (): Promise<void> => {
+    this.login.init();
   };
 }
