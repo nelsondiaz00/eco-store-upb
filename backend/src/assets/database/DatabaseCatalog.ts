@@ -1,92 +1,80 @@
 import { Client } from 'ssh2';
-import { createConnection, Connection } from 'mysql2/promise';
-import mysql from 'mysql2';
 import * as fs from 'fs';
+import mysql from 'mysql2/promise';
 
 export default class DatabaseCatalog {
-    private connection: Connection | null = null;
-    private sshClient: Client | null = null;
+  private sshClient: Client | null = null;
+  private dbConnection: mysql.Connection | null = null;
 
-    private dbConfig = {
-        host: '127.0.0.1',  // Se redirigirá a través del túnel SSH
-        user: process.env['DB_USER'] ?? 'root',
-        password: process.env['DB_PASSWORD'] ?? '',
-        database: process.env['DB_NAME'] ?? 'database',
-        port: 3306, // Puerto estándar de MySQL
-    };
+  private sshConfig = {
+    host: process.env['SSH_HOST'], // IP de la instancia EC2
+    port: process.env['SSH_PORT'], // Puerto SSH estándar
+    username: process.env['SSH_USER'], // Usuario de EC2
+    privateKey: fs.readFileSync(process.env['SSH_KEY_PATH']), // Ruta a la clave PEM
+  };
 
-    // SSH Configuration
-    private sshConfig = {
-        host: process.env['SSH_HOST'] ?? '', // IP de la instancia EC2
-        port: 22,                            // Puerto SSH estándar
-        username: 'ec2-user',                // Usuario de EC2
-        privateKey: fs.readFileSync(process.env['SSH_KEY_PATH'] ?? ''), // Ruta a la clave PEM
-    };
+  private dbConfig = {
+    host: '127.0.0.1', // localhost para el túnel
+    user: 'admin', // Usuario de la base de datos
+    password: 'stefanny', // Contraseña de la base de datos
+    database: 'catalog', // Nombre de la base de datos
+    port: 3306, // Puerto de MySQL
+  };
 
-    public async connect(): Promise<void> {
-        try {
-        console.log('Estableciendo conexión SSH...');
+  public async connect(): Promise<void> {
+    const conn = new Client();
 
-        this.sshClient = new Client();
+    return new Promise((resolve, reject) => {
+      console.log('Configuración SSH:', this.sshConfig); // Verificar configuración SSH
 
-        // Establecer el túnel SSH y redirigir al puerto MySQL
-        this.sshClient.on('ready', async () => {
-            console.log('Conexión SSH establecida');
+      conn
+        .on('ready', () => {
+          console.log('SSH Client :: ready');
+          console.log('Preparándose para establecer el túnel...'); // Mensaje de depuración
+          conn.exec('ls -la', (err, stream) => {
+            if (err) throw err;
+            stream
+              .on('close', (code, signal) => {
+                console.log(
+                  `Comando finalizado con código ${code} y señal ${signal}`
+                );
+                conn.end();
+              })
+              .on('data', (data) => {
+                console.log(`Salida: ${data}`);
+              })
+              .stderr.on('data', (data) => {
+                console.error(`Error: ${data}`);
+              });
+          });
+        })
+        .on('error', (err) => {
+          console.error('Error en la conexión SSH:', err);
+          reject(err);
+        })
+        .connect(this.sshConfig);
+    });
+  }
 
-            this.sshClient?.forwardOut(
-            '127.0.0.1',
-            0,
-            process.env['DB_HOST'] ?? 'localhost',
-            3306,
-            async (err: any, stream: any) => {
-                if (err) {
-                console.error('Error creando el túnel SSH:', err);
-                return;
-                }
+  public async query(sql: string, params: any[] = []): Promise<any> {
+    if (!this.dbConnection) {
+      throw new Error('No hay conexión a la base de datos');
+    }
+    const [results] = await this.dbConnection.execute(sql, params);
+    return results;
+  }
 
-                // Conectar a MySQL usando el túnel SSH
-                this.connection = await createConnection({
-                ...this.dbConfig,
-                stream, // Redirigir la conexión a través del túnel SSH
-                });
-
-                console.log('Conexión a la base de datos MySQL establecida');
-            }
-            );
-        }).connect(this.sshConfig);
-
-        } catch (error) {
-        console.error('Error al conectar a la base de datos o SSH:', error);
-        process.exit(1);
-        }
+  public async closeConnection(): Promise<void> {
+    if (this.dbConnection) {
+      await this.dbConnection.end();
+      console.log('Conexión a la base de datos MySQL cerrada');
     }
 
-    public getPool() {
-        return this.pool;
+    if (this.sshClient) {
+      this.sshClient.end();
+      console.log('Conexión SSH cerrada');
+    } else {
+      console.log('No hay ninguna conexión SSH activa');
     }
-
-    public getConnection(): Connection | null {
-        return this.connection;
-    }
-
-    public async closeConnection(): Promise<void> {
-        if (this.connection) {
-        await this.connection.end();
-        console.log('Conexión a la base de datos cerrada');
-        } else {
-        console.log('No hay ninguna conexión activa');
-        }
-
-        if (this.sshClient) {
-        this.sshClient.end();
-        console.log('Conexión SSH cerrada');
-        }
-    }
-
-    private pool = mysql.createPool(this.dbConfig).promise();
+  }
 }
-
-
-
-
-
