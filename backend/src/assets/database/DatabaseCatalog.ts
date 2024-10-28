@@ -6,9 +6,8 @@ import * as fs from 'fs';
 export default class DatabaseCatalog {
     private connection: Connection | null = null;
     private sshClient: Client | null = null;
-
     private dbConfig = {
-        host: '127.0.0.1',  // Se redirigirá a través del túnel SSH
+        host: '52.87.172.131',  // Se redirigirá a través del túnel SSH
         user: process.env['DB_USER'] ?? 'root',
         password: process.env['DB_PASSWORD'] ?? '',
         database: process.env['DB_NAME'] ?? 'database',
@@ -23,11 +22,16 @@ export default class DatabaseCatalog {
         privateKey: fs.readFileSync(process.env['SSH_KEY_PATH'] ?? ''), // Ruta a la clave PEM
     };
 
+    private pool = mysql.createPool(this.dbConfig).promise();
+
     public async connect(): Promise<void> {
         try {
         console.log('Estableciendo conexión SSH...');
 
         this.sshClient = new Client();
+
+        console.log("host" + this.sshConfig.host)
+        console.log("privateKey" + this.sshConfig.privateKey)
 
         // Establecer el túnel SSH y redirigir al puerto MySQL
         this.sshClient.on('ready', async () => {
@@ -83,7 +87,6 @@ export default class DatabaseCatalog {
         }
     }
 
-    private pool = mysql.createPool(this.dbConfig).promise();
 }
 
 
