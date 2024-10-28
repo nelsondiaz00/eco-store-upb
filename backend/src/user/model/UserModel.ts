@@ -1,8 +1,6 @@
-import { promises as fs } from 'fs';
 import User from '../types/User';
 import DatabaseCatalog from '../../assets/database/DatabaseCatalog';
 import { Pool, RowDataPacket } from 'mysql2/promise';
-
 
 export default class UserModel {
   private db: DatabaseCatalog;
