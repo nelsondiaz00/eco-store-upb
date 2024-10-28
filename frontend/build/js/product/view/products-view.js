@@ -134,5 +134,9 @@ export default class ProductsView extends Observer {
         updateButton.addEventListener('click', () => {
             this.subject.updateProduct(this.recolectProduct());
         });
+        const favoriteButton = document.getElementById('favorite');
+        favoriteButton.addEventListener('click', () => {
+            this.subject.favoriteProduct();
+        });
     }
 }

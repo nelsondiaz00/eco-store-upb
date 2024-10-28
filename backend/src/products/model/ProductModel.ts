@@ -12,18 +12,22 @@ export default class ProductModel {
     // this.pool = this.db.getPool();
   }
   private async readProductsFromFile(): Promise<IProduct[]> {
-    const [rows] = await this.db.query('SELECT * FROM products');
+    const rows = await this.db.query('SELECT * FROM products');
+    // console.log('Filas obtenidas:', rows);
+
     const products = rows.map((row: any) => ({
       id: row['id'],
       title: row['title'],
       amount: row['amount'],
       price: row['price'],
-      description: row['description'],
-      favorite: row['favorite'],
-      discount: row['discount'],
-      discountPer: row['discount_per'],
-      discountUni: row['discount_uni'],
+      description: row['description_'],
+      favorite: Boolean(row['favorite']),
+      discount: Boolean(row['discount']),
+      discountPer: row['discountPer'],
+      discountUni: row['discountUni'],
+      image: row['image'] ?? '',
     })) as IProduct[];
+
     return products;
   }
 
@@ -57,9 +61,11 @@ export default class ProductModel {
   };
 
   public deleteProduct = async (id: number): Promise<boolean> => {
-    const [result] = await this.db.query('DELETE FROM products WHERE id =?', [
+    console.log(id);
+    const result = await this.db.query('DELETE FROM products WHERE id =?', [
       id,
     ]);
+    // console.log(result);
     const affectedRows = (result as any).affectedRows;
     if (affectedRows > 0) {
       return true;
@@ -81,7 +87,7 @@ export default class ProductModel {
       image,
     } = product;
     await this.db.query(
-      'INSERT INTO products(tittle, amount, price, description_, favorite, discount, discountPer, discountUni,image) VALUES(?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO products(title, amount, price, description_, favorite, discount, discountPer, discountUni,image) VALUES(?,?,?,?,?,?,?,?,?)',
       [
         title,
         amount,
@@ -116,8 +122,9 @@ export default class ProductModel {
       discountUni,
       image,
     } = product;
+    console.log(product);
     await this.db.query(
-      'UPDATE products SET tittle=?, amount=?, price=?, description_=?, favorite=?, discount=?, discountPer=?, discountUni=?, image=? WHERE id=?',
+      'UPDATE products SET title=?, amount=?, price=?, description_=?, favorite=?, discount=?, discountPer=?, discountUni=?, image=? WHERE id=?',
       [
         title,
         amount,
@@ -142,5 +149,40 @@ export default class ProductModel {
         JSON.stringify(products, null, 2)
       );
     }*/
+  };
+
+  public addFavoriteProduct = async (
+    idUser: number,
+    idProduct: number
+  ): Promise<void> => {
+    await this.db.query(
+      'INSERT INTO favorites (id_user, id_product) VALUES (?, ?)',
+      [idUser, idProduct]
+    );
+    console.log('Product added to favorites');
+  };
+
+  public getFavoriteProducts = async (id: string): Promise<IProduct[]> => {
+    const products = await this.fetchProducts();
+    const rows = await this.db.query(
+      'SELECT * FROM products WHERE id_user = ?',
+      [id]
+    );
+
+
+    // const products = rows.map((row: any) => ({
+    //   id: row['id'],
+    //   title: row['title'],
+    //   amount: row['amount'],
+    //   price: row['price'],
+    //   description: row['description_'],
+    //   favorite: Boolean(row['favorite']),
+    //   discount: Boolean(row['discount']),
+    //   discountPer: row['discountPer'],
+    //   discountUni: row['discountUni'],
+    //   image: row['image'] ?? '',
+    // })) as IProduct[];
+
+    return products;
   };
 }

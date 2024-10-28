@@ -34,5 +34,15 @@ export default class MoviesView {
       '/products/product/update',
       this.productController.updateProduct.bind(this.productController)
     );
+
+    this.router.post(
+      '/products/product/favorites/favorite/add',
+      this.productController.addFavoriteProduct.bind(this.productController)
+    );
+
+    this.router.get(
+      '/products/product/favorites/:id',
+      this.productController.getFavoriteProducts.bind(this.productController)
+    );
   };
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import ProductModel from '../model/ProductModel';
 import IProduct from '../types/Product';
+import { error } from 'console';
 
 export default class ProductController {
   constructor(private readonly productModel: ProductModel) {}
@@ -37,5 +38,24 @@ export default class ProductController {
     const product = req.body;
     await this.productModel.updateProduct(product);
     res.status(200).send({ message: 'Product updated' });
+  };
+
+  public addFavoriteProduct = async (req: Request, res: Response) => {
+    try {
+      console.log('Adding favorite product');
+      const data = req.body;
+      console.log(data);
+      await this.productModel.addFavoriteProduct(data.idUser, data.idProduct);
+      res.status(200).send({ message: 'Product added to favorites' });
+    } catch (e) {
+      console.error(e);
+      res.status(404).send({ message: 'Error adding favorite product' });
+    }
+  };
+
+  public getFavoriteProducts = async (req: Request, res: Response) => {
+    const {id} = req.params;
+    const products = await this.productModel.getFavoriteProducts(id);
+    res.status(200).json(products);
   };
 }
