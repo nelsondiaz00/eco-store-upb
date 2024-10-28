@@ -1,5 +1,5 @@
 import { createConnection, Connection } from 'mysql2/promise';
-import mysql, { Pool } from 'mysql2'
+import mysql from 'mysql2'
 import dotenv from 'dotenv';
 
 dotenv.config();

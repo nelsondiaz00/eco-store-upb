@@ -66,8 +66,6 @@ export default class ProductModel {
     }
   }; 
 
-  
-
   public addProduct = async (product: IProduct): Promise<void> => {
     const {title, amount, price, description, favorite, discount, discountPer, discountUni, image} = product;
     await this.pool.query('INSERT INTO products(tittle, amount, price, description_, favorite, discount, discountPer, discountUni,image) VALUES(?,?,?,?,?,?,?,?,?)', [title, amount, price, description, favorite, discount, discountPer, discountUni, image]);

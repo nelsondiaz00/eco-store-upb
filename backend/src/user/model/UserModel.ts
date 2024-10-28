@@ -1,13 +1,28 @@
-import path from 'path';
 import { promises as fs } from 'fs';
 import User from '../types/User';
+import DatabaseCatalog from '../../assets/database/DatabaseCatalog';
+import { Pool, RowDataPacket } from 'mysql2/promise';
+
 
 export default class UserModel {
-  PATH_PRODUCTS_JSON = path.join(__dirname, '../../assets/database/users.json');
+  private db: DatabaseCatalog;
+  private pool: Pool;
+
+  constructor() {
+    this.db = new DatabaseCatalog();
+    this.pool = this.db.getPool();
+}
 
   public async getUsers(): Promise<User[]> {
-    const data = await fs.readFile(this.PATH_PRODUCTS_JSON, 'utf-8');
-    return JSON.parse(data) as User[];
+    const [rows] = await this.pool.query<RowDataPacket[]>('SELECT * FROM users');
+    const users = rows.map((row) => ({
+      id: row['id'],
+      name: row['name'],
+      email: row['email'],
+      password: row['password'],
+      role: row['role'],
+    })) as User[];
+    return users;
   }
 
   public async getUserById(id: string): Promise<User> {
