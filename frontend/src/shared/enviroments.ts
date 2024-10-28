@@ -9,11 +9,13 @@ export default class Environment {
   //     return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
   //   };
 
-  public static readonly getEndPointProducts = async (): Promise<string> => {
+  public static readonly getEndPointProducts = async (
+    idUser: string
+  ): Promise<string> => {
     const env = await fetch('./js/env/env.json');
     const json = await env.json();
     const endpoint = json['products'] as EndPoint;
-    return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
+    return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}/${idUser}`;
   };
 
   public static readonly getEndPointAddProduct = async (): Promise<string> => {
@@ -52,6 +54,14 @@ export default class Environment {
       const env = await fetch('./js/env/env.json');
       const json = await env.json();
       const endpoint = json['favoriteProduct'] as EndPoint;
+      return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
+    };
+
+  public static readonly deleteEndPointFavoriteProduct =
+    async (): Promise<string> => {
+      const env = await fetch('./js/env/env.json');
+      const json = await env.json();
+      const endpoint = json['deleteFavoriteProduct'] as EndPoint;
       return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
     };
 }
