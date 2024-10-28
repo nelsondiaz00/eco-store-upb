@@ -2,9 +2,6 @@ import { Client } from 'ssh2';
 import { createConnection, Connection } from 'mysql2/promise';
 import mysql from 'mysql2';
 import * as fs from 'fs';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export default class DatabaseCatalog {
     private connection: Connection | null = null;
