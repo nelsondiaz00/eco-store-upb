@@ -5,8 +5,9 @@ import { error } from 'console';
 
 export default class ProductController {
   constructor(private readonly productModel: ProductModel) {}
-  public getProducts = async (_req: Request, res: Response) => {
-    const products = await this.productModel.fetchProducts();
+  public getProducts = async (req: Request, res: Response) => {
+    const id = req.params['id'];
+    const products = await this.productModel.fetchProducts(id ?? '');
     if (products.length === 0) {
       res.status(200).json([]);
       return;
@@ -54,8 +55,18 @@ export default class ProductController {
   };
 
   public getFavoriteProducts = async (req: Request, res: Response) => {
-    const {id} = req.params;
+    const { id } = req.params;
     const products = await this.productModel.getFavoriteProducts(id);
     res.status(200).json(products);
+  };
+
+  public deleteFavoriteProduct = async (req: Request, res: Response) => {
+    const { idProduct } = req.body;
+    const { idUser } = req.body;
+    if (await this.productModel.deleteFavoriteProduct(idUser, idProduct)) {
+      res.status(200).send({ message: 'Product deleted from favorites' });
+    } else {
+      res.status(404).send({ message: 'Product not found in favorites' });
+    }
   };
 }

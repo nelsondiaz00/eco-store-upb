@@ -6,11 +6,11 @@ export default class Environment {
     //     const endpoint = json["contact/register"] as EndPoint;
     //     return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
     //   };
-    static getEndPointProducts = async () => {
+    static getEndPointProducts = async (idUser) => {
         const env = await fetch('./js/env/env.json');
         const json = await env.json();
         const endpoint = json['products'];
-        return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
+        return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}/${idUser}`;
     };
     static getEndPointAddProduct = async () => {
         const env = await fetch('./js/env/env.json');
@@ -40,6 +40,12 @@ export default class Environment {
         const env = await fetch('./js/env/env.json');
         const json = await env.json();
         const endpoint = json['favoriteProduct'];
+        return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
+    };
+    static deleteEndPointFavoriteProduct = async () => {
+        const env = await fetch('./js/env/env.json');
+        const json = await env.json();
+        const endpoint = json['deleteFavoriteProduct'];
         return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
     };
 }

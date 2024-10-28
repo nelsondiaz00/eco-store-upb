@@ -16,9 +16,9 @@ export default class ProductsView extends Observer {
         this.render();
     }
     async render() {
-        this.fillProducts();
+        this.fillProduct();
     }
-    fillProducts() {
+    fillProduct() {
         const product = this.subject.getProduct();
         if (product) {
             const id = document.getElementById('id');
@@ -39,8 +39,25 @@ export default class ProductsView extends Observer {
                 discountper.value = product.discountPer.toString();
                 discountuni.value = product.discountUni.toString();
             }
+            if (product.favorite) {
+                const dValue = 'M11.5 4v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m0 6.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132';
+                this.changeHeartIcon(dValue);
+            }
+            else {
+                const dValue = 'M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0M14 14V5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1M8 7.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132';
+                this.changeHeartIcon(dValue);
+            }
             const img = document.getElementById('proImg');
             img.src = product.image;
+        }
+    }
+    changeHeartIcon(newPathData) {
+        const heartPath = document.getElementById('heart-path');
+        if (heartPath) {
+            heartPath.setAttribute('d', newPathData);
+        }
+        else {
+            console.error('El elemento SVG no se encontró');
         }
     }
     recolectProduct() {

@@ -11,7 +11,7 @@ export default class MoviesView {
 
   public routes = (): void => {
     this.router.get(
-      '/products',
+      '/products/:id',
       this.productController.getProducts.bind(this.productController)
     );
 
@@ -43,6 +43,11 @@ export default class MoviesView {
     this.router.get(
       '/products/product/favorites/:id',
       this.productController.getFavoriteProducts.bind(this.productController)
+    );
+
+    this.router.delete(
+      '/products/product/favorites/favorite/delete',
+      this.productController.deleteFavoriteProduct.bind(this.productController)
     );
   };
 }

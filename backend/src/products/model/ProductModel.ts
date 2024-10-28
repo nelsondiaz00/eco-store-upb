@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import IProduct from '../types/Product';
 import Environment from '../shared/Environment';
 import DatabaseCatalog from '../../assets/database/DatabaseCatalog';
+import Favorite from '../types/Favorite';
 export default class ProductModel {
   private db: DatabaseCatalog;
   // private pool: Pool;
@@ -31,17 +32,22 @@ export default class ProductModel {
     return products;
   }
 
-  public fetchProducts = async (): Promise<IProduct[]> => {
+  public fetchProducts = async (idUser: string): Promise<IProduct[]> => {
     const rows = await this.readProductsFromFile();
+    const favorites = await this.getFavoriteProducts(idUser);
+    const favoriteProductIds = new Set(
+      favorites.map((favorite) => favorite.idProduct)
+    );
 
     const products = (rows as IProduct[]).map((product) => ({
       ...product,
+      favorite: favoriteProductIds.has(product.id),
       image: `${Environment.getDomain()}/api/v1.0/store/products/product/image/${
         product.id
       }.jpg`,
     }));
 
-    return products.sort((a, b) => a.id - b.id); // Ordenar por ID
+    return products.sort((a, b) => a.id - b.id);
   };
 
   public getProductImage = async (file: string): Promise<string> => {
@@ -162,27 +168,33 @@ export default class ProductModel {
     console.log('Product added to favorites');
   };
 
-  public getFavoriteProducts = async (id: string): Promise<IProduct[]> => {
-    const products = await this.fetchProducts();
+  public getFavoriteProducts = async (id: string): Promise<Favorite[]> => {
     const rows = await this.db.query(
-      'SELECT * FROM products WHERE id_user = ?',
+      'SELECT * FROM favorites WHERE id_user = ?',
       [id]
     );
 
+    const favorites: Favorite[] = rows.map((row: any) => ({
+      idUser: row.id_user,
+      idProduct: row.id_product,
+    }));
 
-    // const products = rows.map((row: any) => ({
-    //   id: row['id'],
-    //   title: row['title'],
-    //   amount: row['amount'],
-    //   price: row['price'],
-    //   description: row['description_'],
-    //   favorite: Boolean(row['favorite']),
-    //   discount: Boolean(row['discount']),
-    //   discountPer: row['discountPer'],
-    //   discountUni: row['discountUni'],
-    //   image: row['image'] ?? '',
-    // })) as IProduct[];
+    return favorites;
+  };
 
-    return products;
+  public deleteFavoriteProduct = async (
+    idUser: string,
+    idProduct: string
+  ): Promise<boolean> => {
+    const result = await this.db.query(
+      'DELETE FROM favorites WHERE id_user = ? AND id_product = ?',
+      [idUser, idProduct]
+    );
+    const affectedRows = (result as any).affectedRows;
+    if (affectedRows > 0) {
+      return true;
+    } else {
+      return false;
+    }
   };
 }

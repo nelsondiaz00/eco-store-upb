@@ -24,7 +24,8 @@ export default class ProductsModel extends Subject {
         return;
     };
     getProductsFromFile = async () => {
-        const response = await fetch(await Environment.getEndPointProducts());
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await fetch(await Environment.getEndPointProducts(user.id));
         if (response.status !== 200) {
             return [];
         }
@@ -149,27 +150,45 @@ export default class ProductsModel extends Subject {
     };
     favoriteProduct = async () => {
         try {
-            const endpoint = await Environment.getEndPointFavoriteProduct();
-            // console.log('IDD: ' + id);
             const user = JSON.parse(localStorage.getItem('user'));
             console.log(user);
             console.log(this.actualProduct);
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Establece el tipo de contenido
-                },
-                body: JSON.stringify({
-                    idUser: user.id, // Asegúrate de que idUser sea el correcto
-                    idProduct: this.actualProduct?.id,
-                }),
-            });
-            if (!response.ok) {
-                throw new Error(`Error al marcar como favorito el producto: ${response.statusText}`);
+            if (!this.actualProduct?.favorite) {
+                const endpoint = await Environment.getEndPointFavoriteProduct();
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        idUser: user.id,
+                        idProduct: this.actualProduct?.id,
+                    }),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al marcar como favorito el producto: ${response.statusText}`);
+                }
+                this.showModal('Producto marcado como favorito', 'Info');
+            }
+            else {
+                const endpoint = await Environment.deleteEndPointFavoriteProduct();
+                const response = await fetch(endpoint, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        idUser: user.id,
+                        idProduct: this.actualProduct?.id,
+                    }),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al eliminar el producto: ${response.statusText}`);
+                }
+                this.showModal('Producto eliminado de favoritos', 'Info');
             }
             this.products = await this.getProductsFromFile();
             this.setProductsByPage(this.page);
-            this.showModal('Producto marcado como favorito', 'Info');
         }
         catch (error) {
             console.error('Error en la solicitud:', error);
