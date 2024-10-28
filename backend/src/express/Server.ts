@@ -41,12 +41,9 @@ export default class Server {
   public start = async (): Promise<void> => {
     const PORT = process.env['PORT'] ?? 3000;
     const HOST = process.env['HOST'] ?? 'localhost';
-    
-    await this.database.connect();
-
+    this.database.connect();
     this.app.listen(PORT, () => {
       console.log(`Server is running on http://${HOST}:${PORT}`);
     });
   };
 }
-
