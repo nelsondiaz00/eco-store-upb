@@ -82,7 +82,10 @@ export default class ProductModel {
   };
 
   public updateProduct = async (product: IProduct): Promise<void> => {
-    const products_json = await this.readProductsFromFile();
+    const {title, amount, price, description, favorite, discount, discountPer, discountUni, image} = product;
+    await this.pool.query('UPDATE products SET tittle=?, amount=?, price=?, description_=?, favorite=?, discount=?, discountPer=?, discountUni=?, image=? WHERE id=?', [title, amount, price, description, favorite, discount, discountPer, discountUni, image, product.id]);
+    console.log('Product updated');
+    /*const products_json = await this.readProductsFromFile();
     const products = products_json as IProduct[];
     const index = products.findIndex((p) => p.id === product.id);
     if (index !== -1) {
@@ -91,6 +94,6 @@ export default class ProductModel {
         path.join(this.PATH_PRODUCTS_JSON),
         JSON.stringify(products, null, 2)
       );
-    }
+    }*/
   };
 }
