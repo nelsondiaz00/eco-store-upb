@@ -11,13 +11,14 @@ export default class UserModel {
   }
 
   public async getUsers(): Promise<User[]> {
-    const [rows] = await this.db.query('SELECT * FROM users');
+    const rows = await this.db.query('SELECT * FROM users');
+    // console.log(rows);
     const users = rows.map((row: any) => ({
       id: row['id'],
-      name: row['name'],
+      name: row['name_user'],
       email: row['email'],
-      password: row['password'],
-      role: row['role'],
+      password: row['password_user'],
+      role: row['role_user'],
     })) as User[];
     return users;
   }

@@ -22,10 +22,11 @@ export default class LoginView extends Observer {
                 console.log('Botón de enviar pulsado');
                 const user = await this.subject.getUserById(emailInput.value);
                 if (user) {
-                    console.log('Usuario encontrado');
+                    console.log('Usuario encontrado ', user);
                     if (user.password === passwordInput.value) {
                         console.log('Contraseña correcta');
                         window.location.href = '/products';
+                        localStorage.setItem('user', JSON.stringify(user));
                         // LoginView.showToast('Contraseña correcta');
                     }
                     else {

@@ -46,4 +46,12 @@ export default class Environment {
     const endpoint = json['getUserById'] as EndPoint;
     return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}/${id}`;
   };
+
+  public static readonly getEndPointFavoriteProduct =
+    async (): Promise<string> => {
+      const env = await fetch('./js/env/env.json');
+      const json = await env.json();
+      const endpoint = json['favoriteProduct'] as EndPoint;
+      return `${endpoint.protocol}://${endpoint.domain}/${endpoint.path}/${endpoint.version}/${endpoint.resource}`;
+    };
 }

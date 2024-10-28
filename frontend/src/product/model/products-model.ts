@@ -1,3 +1,4 @@
+import User from '../../login/types/User.js';
 import Environment from '../../shared/enviroments.js';
 import Product from '../types/product.js';
 import Subject from '../types/subject.js';
@@ -66,6 +67,7 @@ export default class ProductsModel extends Subject<ProductsView> {
   };
 
   public previousPage = (): void => {
+    console.log(this.actualProduct);
     if (this.page > 0) {
       this.page--;
       this.setProductsByPage(this.page);
@@ -161,6 +163,37 @@ export default class ProductsModel extends Subject<ProductsView> {
       this.products = await this.getProductsFromFile();
       this.setProductsByPage(this.page);
       this.showModal('Producto actualizado', 'Info');
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+  };
+
+  public favoriteProduct = async (): Promise<void> => {
+    try {
+      const endpoint = await Environment.getEndPointFavoriteProduct();
+      // console.log('IDD: ' + id);
+      const user = JSON.parse(localStorage.getItem('user') as string) as User;
+      console.log(user);
+      console.log(this.actualProduct);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Establece el tipo de contenido
+        },
+        body: JSON.stringify({
+          idUser: user.id, // Asegúrate de que idUser sea el correcto
+          idProduct: this.actualProduct?.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Error al marcar como favorito el producto: ${response.statusText}`
+        );
+      }
+      this.products = await this.getProductsFromFile();
+      this.setProductsByPage(this.page);
+      this.showModal('Producto marcado como favorito', 'Info');
     } catch (error) {
       console.error('Error en la solicitud:', error);
     }

@@ -34,10 +34,11 @@ export default class LoginView extends Observer<LoginModel> {
           emailInput.value
         );
         if (user) {
-          console.log('Usuario encontrado');
+          console.log('Usuario encontrado ', user);
           if (user.password === passwordInput.value) {
             console.log('Contraseña correcta');
             window.location.href = '/products';
+            localStorage.setItem('user', JSON.stringify(user));
             // LoginView.showToast('Contraseña correcta');
           } else {
             console.log('Contraseña incorrecta');
