@@ -31,13 +31,8 @@ export default class UserModel {
   }
 
   public async createUser(user: User): Promise<void> {
-    const users = await this.getUsers();
-    const maxIdUser = users.reduce(
-      (max, current) => (current.id > (max?.id ?? '') ? current : max),
-      users[0] || { id: '0' }
-    );
-    user.id = (parseInt(maxIdUser.id) + 1).toString();
-    users.push(user);
-    await fs.writeFile(this.PATH_PRODUCTS_JSON, JSON.stringify(users, null, 2));
+    const {id, name, email, password, role} = user
+    await this.pool.query('INSERT INTO users (id, name, email, password, role) VALUES (?,?,?,?,?)', [id, name, email, password, role]);
+    console.log('user added');
   }
 }
