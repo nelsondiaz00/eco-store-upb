@@ -4,9 +4,10 @@ import path from 'path';
 import ProductView from '../products/view/ProductView';
 import ClientView from '../client/view/ClientView';
 import UserView from '../user/view/UserView';
-
+import DatabaseCatalog from '../assets/database/DatabaseCatalog';
 export default class Server {
   private readonly app: Application;
+  private readonly database: DatabaseCatalog;
 
   constructor(
     private readonly productView: ProductView,
@@ -14,6 +15,7 @@ export default class Server {
     private readonly userView: UserView
   ) {
     this.app = express();
+    this.database = new DatabaseCatalog();
     this.statics();
     this.config();
     this.routes();
@@ -36,11 +38,15 @@ export default class Server {
     this.app.use('*', cors());
   };
 
-  public start = (): void => {
+  public start = async (): Promise<void> => {
     const PORT = process.env['PORT'] ?? 3000;
     const HOST = process.env['HOST'] ?? 'localhost';
+    
+    await this.database.connect();
+
     this.app.listen(PORT, () => {
       console.log(`Server is running on http://${HOST}:${PORT}`);
     });
   };
 }
+
