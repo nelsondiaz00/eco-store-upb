@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --env-file=./env/.pro.env build/index.js",
+    "start": "node --env-file=./env/.devp.env build/js/index.js",
     "dev": "ts-node-dev --env-file=./env/.devp.env src/index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -7,7 +7,7 @@ export default class DatabaseCatalog {
     private connection: Connection | null = null;
     private sshClient: Client | null = null;
     private dbConfig = {
-        host: '52.87.172.131',  // Se redirigirá a través del túnel SSH
+        host: '18.208.193.86',  // Se redirigirá a través del túnel SSH
         user: process.env['DB_USER'] ?? 'root',
         password: process.env['DB_PASSWORD'] ?? '',
         database: process.env['DB_NAME'] ?? 'database',
